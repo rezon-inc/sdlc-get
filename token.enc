@@ -1,0 +1,8 @@
+{
+  "v": 1,
+  "kdf": "scrypt-32768",
+  "salt": "qLvem5SugYQ+7/FCGL0LIQ==",
+  "iv": "WgXMn5WsVoAb0mqZ",
+  "tag": "xoWJsMWnFRin2w+a7vrJWg==",
+  "data": "aPFu8prbJcFThIHOREZkykEGZNKQ4B6VQxWVo948NU/ZmOt2Z3FFCj3mKmLnbu1qD1qCLH8EW3RVBM4cTmcfn+NMa4pSoarcHswc9iLeFGkzLT6Jht0W+HJaFO9y"
+}
