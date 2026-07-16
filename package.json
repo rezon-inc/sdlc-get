@@ -1,0 +1,8 @@
+{
+  "name": "sdlc-get",
+  "version": "1.0.0",
+  "description": "sdlc-orchestrator installer — ID/パスワードで社内配布リポジトリを導入するブートストラップ",
+  "bin": { "sdlc-get": "cli.js" },
+  "engines": { "node": ">=18" },
+  "private": true
+}
