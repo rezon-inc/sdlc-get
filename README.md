@@ -11,6 +11,14 @@ npx github:rezon-inc/sdlc-get
 
 必要要件: Node 18+ / git / Python 3.10+ / [Claude Code](https://claude.com/claude-code)
 
+## Rezon の業務スキル（営業開始など）を入れる
+
+```bash
+npx github:rezon-inc/sdlc-get skills
+# ID / Password は上と同じ。~/Documents/作業/rezon-skills に入り、~/.claude/skills にスキルが入る
+# 2回目からは同じコマンドで最新になる
+```
+
 ## 仕組み（なぜ安全か）
 - 本体リポジトリは private。このリポジトリには**パスワードで暗号化された読取専用デプロイトークン**（`token.enc`, AES-256-GCM + scrypt）だけが置かれる。
 - 正しい ID/パスワードを入力すると復号に成功し、clone が走る。トークン平文は端末に保存されない。

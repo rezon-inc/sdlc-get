@@ -11,7 +11,9 @@ const crypto = require("crypto");
 const { spawnSync } = require("child_process");
 const readline = require("readline");
 
-const REPO = "https://github.com/rezon-inc/system-dev-orchestrator.git";
+// 2026-10-23：`npx github:rezon-inc/sdlc-get skills` で Rezon の業務スキル（rezon-skills：営業開始など）を入れる。2回目からは最新にして入れ直す
+const SKILLS = process.argv[2] === "skills";
+const REPO = SKILLS ? "https://github.com/rezon-inc/rezon-skills.git" : "https://github.com/rezon-inc/system-dev-orchestrator.git";
 const ENC_PATH = path.join(__dirname, "token.enc");
 
 function die(msg) { console.error("NG: " + msg); process.exit(1); }
@@ -38,8 +40,9 @@ function decrypt(id, password) {
 
 (async () => {
   if (!fs.existsSync(ENC_PATH)) die("token.enc が未配置。管理者がまだ配布を有効化していない");
-  const target = path.resolve(process.argv[2] || "system-dev-orchestrator");
-  if (fs.existsSync(target) && fs.readdirSync(target).length > 0) die(`${target} は空でない`);
+  const target = SKILLS ? path.join(require("os").homedir(), "Documents", "作業", "rezon-skills") : path.resolve(process.argv[2] || "system-dev-orchestrator");
+  const update = SKILLS && fs.existsSync(path.join(target, ".git"));
+  if (!update && fs.existsSync(target) && fs.readdirSync(target).length > 0) die(`${target} は空でない`);
 
   const id = await ask("ID: ");
   const pw = await ask("Password: ", true);
@@ -48,10 +51,17 @@ function decrypt(id, password) {
 
   console.log("認証OK。導入中…");
   const url = REPO.replace("https://", `https://x-access-token:${token}@`);
+  if (update) {
+    const p = spawnSync("git", ["-C", target, "pull", "--ff-only", url, "main"], { stdio: ["ignore", "inherit", "inherit"] });
+    if (p.status !== 0) die("更新に失敗（git pull）。管理者に連絡");
+    const ins = spawnSync("bash", [path.join(target, "install.sh")], { stdio: "inherit" }); process.exit(ins.status || 0);
+  }
+  if (SKILLS) fs.mkdirSync(path.dirname(target), { recursive: true });
   const r = spawnSync("git", ["clone", "--depth", "1", url, target], { stdio: ["ignore", "inherit", "inherit"] });
   if (r.status !== 0) die("clone失敗（トークン失効の可能性。管理者に連絡）");
   spawnSync("git", ["remote", "set-url", "origin", REPO], { cwd: target });
 
+  if (SKILLS) { const ins = spawnSync("bash", [path.join(target, "install.sh")], { stdio: "inherit" }); process.exit(ins.status || 0); }
   console.log(`OK: ${target} に導入した。次の手順:
   1) cd ${path.relative(process.cwd(), target) || "."}
   2) pip3 install -r requirements.txt
